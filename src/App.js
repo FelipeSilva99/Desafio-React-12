@@ -1,72 +1,89 @@
-import React, { Components } from 'react';
-import Movies from "../src/Movies.js"
+import React, { Component } from "react";
+import Home from "./Components/Home";
+import Movies from "./Components/Movies";
+import Series from "./Components/Series";
+import styled from "styled-components";
+import "../src/App.css";
 
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
-class Netflix extends Components {
-  state = {
-    movies: [],
-    series: []
+const StyledLink = styled(Link)`
+  font-family: "Encode Sans SC", sans-serif;
+  height: 70px;
+  color: #dcdcdc;
+  font-size: 25px;
+  text-decoration: none;
+
+  cursor: pointer;
+  &:hover {
+    transform: scale(110%);
+    border-radius: 10px 10px 10px 10px;
   }
+`;
 
-  componentDidMount() {
-    this.getMovies()
-    this.getSeries()
+const List = styled.ul`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 50px;
+  color: #dcdcdc;
+  list-style: none;
+  background-image: linear-gradient(#1C1C1C, #4F4F4F	);
+`;
+
+const Item = styled.li`
+  font-size: 25px;
+  cursor: pointer;
+  &:hover {
+    // transform: scale(110%);
+    border-radius: 10px;
   }
+`;
 
-  getMovies = async () => {
-    const response = await Movies.get()
-    console.log("Filmes", response.data.results)
+const Back = styled.div`
+  background: #141414;
+`;
 
-    const completeMovies = response.data.results.map((item) => {
-      return {
-        ...item,
-        poster_path: `https://image.tmdb.org/t/p/w500${item.poster_path}`
-      }
-    })
+const Header = styled.nav`
+  position: fixed;
+  width: 100%;
+  top: -1px;
+  z-index: 1;
+`;
 
-    this.setState({
-      movies: completeMovies
-    })
-  }
-
-  getSeries = async () => {
-    const response = await Series.get()
-    console.log("Series", response.data.results)
-
-    const completeSeries = response.data.results.map((item) => {
-      return {
-        ...item,
-        backdrop_path: `https://image.tmdb.org/t/p/w500${item.backdrop_path}`
-      }
-    })
-
-    this.setState({
-      series: completeSeries
-    })
-  }
-
+class App extends Component {
   render() {
     return (
-      <section>
+      <Router>
+        <Back>
         <div>
-          {this.state.movies.map((itemM, index) => (
-            <ul key={index}>
-              <li>{itemM.title}</li>
-              <li>{itemM.vote_average}</li>
-              <img src={itemM.props.poster_path} alt={`poster filme popular ${itemM.title}`} />
-            </ul>
-          ))}
+          <Header>
+            <List>
+              <Item>
+                <StyledLink to="/">INICIO</StyledLink>
+              </Item>
+              <Item>
+                <StyledLink to="/movies">FILMES</StyledLink>
+              </Item>
+              <Item>
+                <StyledLink to="/series">SERIES</StyledLink>
+              </Item>
+            </List>
+          </Header>
         </div>
-        <div>
-          {this.state.series.map((itemS, index) => (
-            <ul key={index}>
-              <li>{itemS.name}</li>
-              <li>{itemS.average}</li>
-              <img src={itemS.props.backdrop_path} alt={`poster serie popular ${itemS.name}`} />
-            </ul>
-          ))}
-        </div>
-      </section>
+        <Switch>
+          <Route path="/series">
+            <Series />
+          </Route>
+          <Route path="/movies">
+            <Movies />
+          </Route>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
+        </Back>
+      </Router>
     );
   }
 }
